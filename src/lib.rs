@@ -18,13 +18,13 @@ impl Default for Cell{
     }
 }
 impl Cell{
-    pub fn set_pos(&mut self, y: usize, x: usize) -> Self{
+    pub fn set_pos(mut self, y: usize, x: usize) -> Self{
         if (x < 1) || (y < 1){return self;}
         self.px = x;
         self.py = y;
         self
     }
-    pub fn set_content(&mut self, content: &str) -> Self{
+    pub fn set_content(mut self, content: &str) -> Self{
         self.content = content.to_string();
         self
     }
