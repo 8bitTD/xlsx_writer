@@ -10,10 +10,11 @@ pub struct Cell{
     bg_col_index: Option<usize>,
     content: String,
     hyperlink: Option<String>,
+    validation: Option<String>,
 }
 impl Default for Cell{
     fn default() -> Self{
-        Self { px: 1, py: 1, font_col_index: None, bg_col_index: None, content: String::from(""), hyperlink: None}
+        Self { px: 1, py: 1, font_col_index: None, bg_col_index: None, content: String::from(""), hyperlink: None, validation: None }
     }
 }
 impl Cell{
