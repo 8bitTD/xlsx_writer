@@ -78,33 +78,33 @@ impl Default for Sheet{
     }
 }
 impl Sheet{
-    pub fn set_name(mut self, name: &str) -> Self{
+    pub fn set_name(&mut self, name: &str) -> Self{
         self.name = String::from(name);
         self
     }
-    pub fn set_cells(mut self, cells: Vec<Cell>) -> Self{
+    pub fn set_cells(&mut self, cells: Vec<Cell>) -> Self{
         self.cells = cells;
         self
     }
-    pub fn add_cell(mut self, cell: Cell) -> Self{
+    pub fn add_cell(&mut self, cell: Cell) -> Self{
         self.cells.push(cell);
         self
     }
-    pub fn set_widths(mut self, widths: Vec<Width>) -> Self{
+    pub fn set_widths(&mut self, widths: Vec<Width>) -> Self{
         self.widths = widths;
         self
     }
-    pub fn add_width(mut self, px: usize, width: usize) -> Self{
+    pub fn add_width(&mut self, px: usize, width: usize) -> Self{
         self.widths.push(Width{px, width});
         self
     }
-    pub fn set_sort(mut self, y: usize, sx: usize, ex:usize) -> Self{
+    pub fn set_sort(&mut self, y: usize, sx: usize, ex:usize) -> Self{
         let st = format!("{}{}",get_alpabet_from_num(sx),y);
         let ed = format!("{}{}",get_alpabet_from_num(ex),y);
         self.sort = Some(format!("{}{}{}",st,":",ed));
         self
     }
-    pub fn add_line(mut self, sy:usize, ey:usize, sx:usize, ex:usize, num:usize) -> Self {
+    pub fn add_line(&mut self, sy:usize, ey:usize, sx:usize, ex:usize, num:usize) -> Self {
         let line = Line{
             range: format!("{}{}{}{}{}", get_alpabet_from_num(sx),sy,":",get_alpabet_from_num(ex),ey),
             number: num,
@@ -146,11 +146,11 @@ impl Default for Xlsx{
 }
 
 impl Xlsx{
-    pub fn set_path(mut self, path: String) -> Self{
+    pub fn set_path(&mut self, path: String) -> Self{
         self.xlsx_path = path;
         self
     }
-    pub fn add_sheet(mut self, sheet: Sheet) -> Self {
+    pub fn add_sheet(&mut self, sheet: Sheet) -> Self {
         self.sheets.push(sheet.clone());
         self
     }
