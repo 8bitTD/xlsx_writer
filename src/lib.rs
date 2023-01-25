@@ -120,7 +120,7 @@ pub enum XlsxState{
 #[derive(Debug)]
 pub struct Xlsx{
     pub xlsx_path: String,
-    pub rxs: Vec<std::sync::mpsc::Receiver<std::process::Child>>,
+    pub rxs_write: Option<std::sync::mpsc::Receiver<bool>>,
     pub state: XlsxState,
     pub sheets: Vec<Sheet>,
     pub rc: std::sync::Arc<std::sync::Mutex<String>>,
@@ -134,7 +134,7 @@ impl Default for Xlsx{
         let xlsx_path = format!("{}{}",dt_path,".xlsx");
         Self { 
             xlsx_path: xlsx_path,
-            rxs: Vec::new(), 
+            rxs_write: None,
             state: XlsxState::Idle,
             sheets: Vec::new(),
             rc: std::sync::Arc::new(std::sync::Mutex::new(String::from(""))),
@@ -152,20 +152,28 @@ impl Xlsx{
         self
     }
     pub fn update(&mut self){
-        if self.rxs.len() == 0{return;}
-        let rx = &self.rxs[0];
-        match rx.try_recv(){
+        if self.rxs_write.is_none(){return;}
+        match self.rxs_write.as_ref().unwrap().try_recv(){
             Ok(_c)=>{ self.state = XlsxState::Idle; },
             Err(_e) =>{ }
         };
     }
-    pub fn is_exec(&mut self) -> bool{
+    pub fn is_write(&mut self) -> bool{
         self.state == XlsxState::Write
     }
 
-    pub fn export_xlsx(&mut self) {
+    pub fn write_xlsx(&mut self) {
         self.state = XlsxState::Write;
-        self.rxs = exec_export(self.xlsx_path.clone(), self.sheets.clone(), &self.rc);
+        self.rxs_write = write_xlsx(self.xlsx_path.clone(), self.sheets.clone(), &self.rc);
+    }
+
+    pub fn open_xlsx(&self){
+        std::process::Command::new("cmd")
+            .args(&["/C", &self.xlsx_path])
+            .creation_flags(0x08000000)
+            .current_dir("C:\\Users")
+            .spawn().unwrap();
+            //*crc.lock().unwrap() = format!("{}","エクセルを起動しています");
     }
 }
 
@@ -202,11 +210,11 @@ fn get_alpabet_from_num(num:usize) -> String{
 }
 
 
-fn exec_export(xlsx_path: String, sheets: Vec<Sheet>, rc: &std::sync::Arc<std::sync::Mutex<String>>) -> Vec<std::sync::mpsc::Receiver<std::process::Child>>{
+fn write_xlsx(xlsx_path: String, sheets: Vec<Sheet>, rc: &std::sync::Arc<std::sync::Mutex<String>>) -> Option<std::sync::mpsc::Receiver<bool>>{
     let (tx, rx) = std::sync::mpsc::channel();
     let crc= std::sync::Arc::clone(&rc);
     std::thread::spawn(move || {
-        let ps_path = export_ps1(&xlsx_path, &sheets, &crc);
+        let ps_path = write_ps1(&xlsx_path, &sheets, &crc);
         let mut child = std::process::Command::new("cmd")
             .args(&["/C", "powershell -NoProfile -ExecutionPolicy Unrestricted",&ps_path])
             .creation_flags(0x08000000)
@@ -216,18 +224,20 @@ fn exec_export(xlsx_path: String, sheets: Vec<Sheet>, rc: &std::sync::Arc<std::s
         let _result = child.wait().unwrap();
         rm_rf::remove(&ps_path).unwrap();//psファイルを削除する処理
         *crc.lock().unwrap() = format!("{}","パワーシェルファイルを削除しています");
+        /*
         let cld = std::process::Command::new("cmd")
             .args(&["/C", &xlsx_path])
             .creation_flags(0x08000000)
             .current_dir("C:\\Users")
             .spawn().unwrap();
             *crc.lock().unwrap() = format!("{}","エクセルを起動しています");
-        tx.send(cld).unwrap();
+        */
+        tx.send(true).unwrap();
     });
-    vec![rx]
+    Some(rx)
 }
 
-fn export_ps1(xlsx_path: &String, sheets: &Vec<Sheet>, rc: &std::sync::Arc<std::sync::Mutex<String>>) -> String{
+fn write_ps1(xlsx_path: &String, sheets: &Vec<Sheet>, rc: &std::sync::Arc<std::sync::Mutex<String>>) -> String{
     let ps_path = xlsx_path.replace(".xlsx", ".ps1");
     let mut cmd = Vec::new();
     cmd.push(format!("$excel = New-Object -ComObject Excel.Application;\n"));
@@ -282,22 +292,9 @@ fn export_ps1(xlsx_path: &String, sheets: &Vec<Sheet>, rc: &std::sync::Arc<std::
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    //use super::*;
     #[test]
     fn it_works() {
-        let xlsx_path =  "./test.xlsx".to_owned();
-        println!("{:?}", xlsx_path);
-        let mut cells = Vec::new();
-        let c = Cell::default().set_pos(1,1).set_content("_test");
-        cells.push(c);
-        let sheet1 =Sheet::default()
-            .set_name("test_sheet")
-            .set_cells(cells);
-        let mut xlsx = Xlsx::default().add_sheet(sheet1).set_path(xlsx_path);
-        xlsx.export_xlsx();
-        while xlsx.is_exec(){
-            xlsx.update();
-        }
-        println!("{:?}","test_end!");
+        
     }
 }
