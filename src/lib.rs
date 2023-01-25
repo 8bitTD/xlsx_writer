@@ -49,8 +49,8 @@ impl Cell{
 
 #[derive(Debug, Clone)]
 pub struct Width{
-    px: usize,
-    width: usize,
+    pub px: usize,
+    pub width: usize,
 }
 #[derive(Debug, Clone)]
 pub struct Line{
@@ -86,12 +86,10 @@ impl Sheet{
         self.cells = cells;
         self
     }
-    #[allow(dead_code)]
     pub fn add_cell(mut self, cell: Cell) -> Self{
         self.cells.push(cell);
         self
     }
-    #[allow(dead_code)]
     pub fn set_widths(mut self, widths: Vec<Width>) -> Self{
         self.widths = widths;
         self
