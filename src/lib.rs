@@ -18,25 +18,31 @@ impl Default for Cell{
     }
 }
 impl Cell{
-    pub fn set_pos(&mut self, y: usize, x: usize){
+    pub fn set_pos(&mut self, y: usize, x: usize) -> Self{
         if (x < 1) || (y < 1){return self;}
         self.px = x;
         self.py = y;
+        self
     }
-    pub fn set_content(&mut self, content: &str){
+    pub fn set_content(&mut self, content: &str) -> Self{
         self.content = content.to_string();
+        self
     }
-    pub fn set_font_col_index(&mut self, index: usize){
+    pub fn set_font_col_index(mut self, index: usize) -> Self{
         self.font_col_index = Some(index);
+        self
     }
-    pub fn set_bg_col_index(&mut self, index: usize){
+    pub fn set_bg_col_index(mut self, index: usize) -> Self{
         self.bg_col_index = Some(index);
+        self
     }
-    pub fn set_hyperlink(&mut self, path: &str){
+    pub fn set_hyperlink(mut self, path: &str) -> Self{
         self.hyperlink = Some(path.to_string());
+        self
     }
-    pub fn set_valication(&mut self, validation: &str){
+    pub fn set_valication(mut self, validation: &str) -> Self{
         self.validation = Some(String::from(validation));
+        self
     }
 }
 
