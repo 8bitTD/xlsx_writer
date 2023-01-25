@@ -112,7 +112,6 @@ impl Sheet{
 }
 
 #[derive(Debug, PartialEq)]
-#[cfg_attr(feature = "persistence", derive(serde::Deserialize, serde::Serialize))]
 pub enum XlsxState{
     Idle,
     Write,
@@ -130,8 +129,6 @@ pub struct Xlsx{
 impl Default for Xlsx{
     fn default() -> Self{
         let dt_path = dirs::desktop_dir().unwrap().as_os_str().to_str().unwrap().to_string().replace("\\","/");
-        //let datetime = chrono::Utc::now().with_timezone(&chrono::FixedOffset::east(9 * 3600)).naive_local();
-        //let datetime: chrono::Utc::now().with_timezone(&chrono::FixedOffset::east_opt(9 * 3600).unwrap()).naive_local();
         let datetime = chrono::Utc::now().with_timezone(&chrono::FixedOffset::east_opt(9 * 3600).unwrap()).naive_local();
         let dt_path = format!("{}{}{}",dt_path,"/xlsx_",datetime.format("%Y%m%d%H%M%S").to_string());
         let xlsx_path = format!("{}{}",dt_path,".xlsx");
