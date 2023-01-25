@@ -1,0 +1,23 @@
+[package]
+name = "xlsx_writer"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+eframe = "0.18.0"
+curl = "0.4.44"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+walkdir = "2.3.2"
+xml-rs = "0.8.4"
+num_cpus = "1.0"
+native-dialog = "0.5.5"
+encoding_rs = "0.8.28"
+wildmatch = "2.1.1"
+dirs = "3.0"
+chrono = "0.4.23"
+rm_rf = "0.6.1"
+winapi = "0.3.9"
+whoami = {version="1.0.1"}
